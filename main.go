@@ -37,7 +37,7 @@ func main() {
 
 	// Fetch data from Fed St. Louis API
 	for k, v := range seriesId {
-		fileInfo, err := os.Stat(fmt.Sprintf("server/%s.json", k))
+		fileInfo, err := os.Stat(fmt.Sprintf("data/%s.json", k))
 		if err == nil {
 			duration := time.Since(fileInfo.ModTime())
 			if duration.Hours() < 24*7 {
@@ -59,6 +59,6 @@ func main() {
 		}
 		defer resp.Body.Close()
 		data, _ := ioutil.ReadAll(resp.Body)
-		ioutil.WriteFile(fmt.Sprintf("server/%s.json", k), data, 0644)
+		ioutil.WriteFile(fmt.Sprintf("data/%s.json", k), data, 0644)
 	}
 }
