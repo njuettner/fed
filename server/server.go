@@ -21,11 +21,12 @@ func main() {
 func GetData(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	fileName := params["series_id"]
-	fmt.Println(fileName)
-	data, err := os.ReadFile(fmt.Sprintf("server/%s.json", fileName))
+
+	data, err := os.ReadFile(fmt.Sprintf("data/%s.json", fileName))
 	if err != nil {
 		panic(err)
 	}
+
 	fedData := fed.Data{}
 	err = json.Unmarshal(data, &fedData)
 	if err != nil {

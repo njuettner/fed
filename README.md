@@ -2,9 +2,9 @@
 
 This repository contains a collection of tools for gathering FED data information such as money supply, consumer price index, ... .
 
-<p align="center"><img src="demo.png" width="150"></p>
-<p align="center"><img src="demo2.png" width="150"></p>
-<p align="center"><img src="demo3.png" width="150"></p>
+<p align="center"><img src="screenshots/demo.png" width="150"></p>
+<p align="center"><img src="screenshots/demo2.png" width="150"></p>
+<p align="center"><img src="screenshots/demo3.png" width="150"></p>
 
 ## Features
 
@@ -30,4 +30,5 @@ If you would like to contribute to this repository, please submit a pull request
 ## License
 
 This repository is licensed under the MIT License. See the `LICENSE` file for details.
+
 
