@@ -22,15 +22,15 @@ jobs:
 
       - name: "Collect FED Data"
         env:
-          FED_API_KEY: ${{ secrets.FED_API_KEY }}
+          FED_API_KEY: '${{ secrets.FED_API_KEY }}'
         run: |
           go run main.go 
 
       - name: "Decrypt Private Key"
         env:
-          BOT_SSH_KEY: ${{ secrets.BOT_SSH_KEY}}
+          BOT_SSH_KEY: '${{ secrets.BOT_SSH_KEY }}'
         run: |
-          echo "$env:$BOT_SSH_KEY" > /tmp/id_ed25519
+          echo "$BOT_SSH_KEY" > /tmp/id_ed25519
 
       - name: "Setup SSH Agent"
         env:
