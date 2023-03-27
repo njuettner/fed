@@ -1,6 +1,6 @@
-package moneysupply
+package fed
 
-type MoneySupply struct {
+type Data struct {
 	RealtimeStart    string `json:"realtime_start"`
 	RealtimeEnd      string `json:"realtime_end"`
 	ObservationStart string `json:"observation_start"`
