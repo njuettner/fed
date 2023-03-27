@@ -2,13 +2,15 @@
 
 This repository contains a collection of tools for gathering FED data information such as money supply, consumer price index, ... .
 
-<p align="center"><img src="demo.png" width="300"></p>
-<p align="center><img src="demo2.png" width="300"><img src="demo3.png" width="300"></p>
+<p align="center"><img src="demo.png" width="150"></p>
+<p align="center"><img src="demo2.png" width="150"></p>
+<p align="center"><img src="demo3.png" width="150"></p>
 
 ## Features
 
 - Collects different data from FED St.Louis Web Service.
-- Runs a webserver with all collected data, used as data source (JSON), for easy visualization in a Grafana dashboard.
+- Updates every day automatically via GH action.
+- Provides a webserver with all collected data, used as data source (JSON), for easy visualization in a Grafana dashboard.
 
 ## Usage
 
