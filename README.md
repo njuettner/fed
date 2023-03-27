@@ -2,7 +2,8 @@
 
 This repository contains a collection of tools for gathering FED data information such as money supply, consumer price index, ... .
 
-<p><img src="demo.png" width="300"><img src="demo2.png" width="300"><img src="demo3.png" width="300"></p>
+<p align="center"><img src="demo.png" width="300"></p>
+<p align="center><img src="demo2.png" width="300"><img src="demo3.png" width="300"></p>
 
 ## Features
 
