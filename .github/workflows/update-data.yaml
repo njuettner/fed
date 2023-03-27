@@ -20,7 +20,7 @@ jobs:
           cache: true
           go-version: "1.19.2"
 
-      - name: "Collectimg FED Data"
+      - name: "Collecting FED Data"
         env:
           FED_API_KEY: '${{ secrets.FED_API_KEY }}'
         run: |
@@ -31,7 +31,6 @@ jobs:
           BOT_SSH_KEY: '${{ secrets.BOT_SSH_KEY }}'
         run: |
           echo "$BOT_SSH_KEY" > /tmp/id_ed25519
-          echo $(cat /tmp/id_ed25519)
 
       - name: "Setup SSH Agent"
         env:
