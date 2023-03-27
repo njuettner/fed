@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -13,12 +14,37 @@ func main() {
 	apikey := os.Getenv("FED_API_KEY")
 
 	var seriesId = map[string]string{
-		"m1": "M1SL",
-		"m2": "M2SL",
+		"m1":           "M1SL",
+		"m2":           "M2SL",
+		"cpi":          "CPALTT01USM657N",
+		"cpi_raw":      "CPIAUCNS",
+		"gpd":          "GDP",
+		"unemployment": "UNRATE",
+		"fedfunds":     "FEDFUNDS",
+		"treasury":     "DGS10",
+		"oil":          "DCOILWTICO",
+		"bitcoin":      "CBBTCUSD",
+		"housing":      "HOUST",
+		"consumer":     "PCE",
+		"industrial":   "INDPRO",
+		"retail":       "RSAFS",
+		"rdpi":         "DSPIC96",
+		"eu":           "DEXUSEU",
+		"gb":           "DEXUSUK",
+		"cn":           "DEXCHUS",
+		"jp":           "DEXJPUS",
 	}
 
 	// Fetch data from Fed St. Louis API
 	for k, v := range seriesId {
+		fileInfo, err := os.Stat(fmt.Sprintf("server/%s.json", k))
+		if err == nil {
+			duration := time.Since(fileInfo.ModTime())
+			if duration.Hours() < 24*7 {
+				fmt.Printf("Skipping fetching information for %s, no new information needed ...\n", k)
+				continue
+			}
+		}
 
 		params := "?series_id=" + v + "&api_key=" + apikey + "&file_type=json"
 		req, err := http.NewRequest("GET", url+params, nil)

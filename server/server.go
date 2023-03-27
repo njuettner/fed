@@ -8,31 +8,31 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/njuettner/fed-data-collection/pkg/moneysupply"
+	"github.com/njuettner/fed-data-collection/pkg/fed"
 )
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/supply/{money}", GetMoneySupply).Methods("GET")
+	r.HandleFunc("/data/{series_id}", GetData).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8081", r))
 }
 
-func GetMoneySupply(w http.ResponseWriter, r *http.Request) {
+func GetData(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	fileName := params["money"]
+	fileName := params["series_id"]
 	fmt.Println(fileName)
 	data, err := os.ReadFile(fmt.Sprintf("server/%s.json", fileName))
 	if err != nil {
 		panic(err)
 	}
-	money := moneysupply.MoneySupply{}
-	err = json.Unmarshal(data, &money)
+	fedData := fed.Data{}
+	err = json.Unmarshal(data, &fedData)
 	if err != nil {
 		panic(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(money)
+	json.NewEncoder(w).Encode(fedData)
 }
