@@ -1,10 +1,10 @@
 # Fed Data Collection and Visualization
 
-This repository contains a collection of tools for gathering FED data information such as money supply, consumer price index, ....
+This repository contains a collection of tools for gathering FED data information such as money supply, consumer price index, ... .
 
-<img src="demo.png" width="700">
-<img src="demo2.png" width="700">
-<img src="demo3.png" width="700">
+<img src="demo.png" width="300">
+<img src="demo2.png" width="300">
+<img src="demo3.png" width="300">
 
 ## Features
 
