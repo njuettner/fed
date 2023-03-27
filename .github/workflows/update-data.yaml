@@ -30,7 +30,7 @@ jobs:
         env:
           BOT_SSH_KEY: ${{ secrets.BOT_SSH_KEY}}
         run: |
-          echo "${BOT_SSH_KEY}" > /tmp/id_ed25519
+          echo "$env:$BOT_SSH_KEY" > /tmp/id_ed25519
 
       - name: "Setup SSH Agent"
         env:
