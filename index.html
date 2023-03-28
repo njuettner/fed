@@ -12,8 +12,8 @@
         // Define function to create a chart for a single JSON file
         const createChart = (data, chartId, label) => {
             // Extract data from observations arrayA
-			const labels = data.observations.slice(-100).map(obs => obs.date);
-            const values = data.observations.slice(-100).map(obs => Number(obs.value));
+			const labels = data.observations.slice(-200).map(obs => obs.date);
+            const values = data.observations.slice(-200).map(obs => Number(obs.value));
 
 
             // Create chart using Chart.js
