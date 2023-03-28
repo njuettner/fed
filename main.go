@@ -16,6 +16,7 @@ func main() {
 	var seriesId = map[string]string{
 		"m1":                 "M1SL",
 		"m2":                 "M2SL",
+		"totalassets":        "RESPPANWW",
 		"cpi":                "CPALTT01USM657N",
 		"cpi_yoy":            "CPALTT01USM659N",
 		"cpi_raw":            "CPIAUCNS",
