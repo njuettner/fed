@@ -28,6 +28,7 @@ func main() {
 		"treasury":           "DGS10",
 		"oil":                "DCOILWTICO",
 		"bitcoin":            "CBBTCUSD",
+		"ethereum":           "CBETHUSD",
 		"housing":            "HOUST",
 		"consumer":           "PCE",
 		"industrial":         "INDPRO",
