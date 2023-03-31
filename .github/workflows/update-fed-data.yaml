@@ -8,7 +8,7 @@ jobs:
   go-run-schedule:
     runs-on: "ubuntu-latest"
     steps:
-    
+
       - name: "Setup Git Project"
         uses: "actions/checkout@v3"
 
@@ -22,7 +22,7 @@ jobs:
         env:
           FED_API_KEY: '${{ secrets.FED_API_KEY }}'
         run: |
-          go run main.go 
+          go run main.go
 
       - name: "Ensure Private Key"
         env:
@@ -50,9 +50,11 @@ jobs:
         env:
           SSH_AUTH_SOCK: "/tmp/ssh_agent.sock"
         run: |
+          if [[ $(git status --porcelain) ]]; then
             git add data/*.json
             git commit -m "update fed data"
             git push
+          fi
 
       - name: "Cleanup Build Container"
         env:
