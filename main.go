@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 )
 
 func main() {
@@ -43,25 +42,16 @@ func main() {
 
 	// Fetch data from Fed St. Louis API
 	for k, v := range seriesId {
-		fileInfo, err := os.Stat(fmt.Sprintf("data/%s.json", k))
-		if err == nil {
-			duration := time.Since(fileInfo.ModTime())
-			if duration.Hours() < 24*7 {
-				fmt.Printf("Skipping fetching information for %s, no new information needed ...\n", k)
-				continue
-			}
-		}
-
 		params := "?series_id=" + v + "&api_key=" + apikey + "&file_type=json"
 		req, err := http.NewRequest("GET", url+params, nil)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
 		}
 		// Make the API request
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
 		}
 		defer resp.Body.Close()
 		data, _ := ioutil.ReadAll(resp.Body)
