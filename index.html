@@ -13,6 +13,12 @@
     .dark-mode button {
         border: none;
     }
+    #darkModeToggle {
+        position: fixed;
+        right: 10px;
+        top: 10px;
+        background-color: transparent;
+    }
     </style>
 </head>
 <body>
@@ -31,6 +37,12 @@
 			const labels = data.observations.slice(-150).map(obs => obs.date);
             const values = data.observations.slice(-150).map(obs => Number(obs.value));
 
+            // Check if dark mode is enabled
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            // Set colors based on mode
+            const backgroundColor = isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 99, 132, 0.2)';
+            const borderColor = isDarkMode ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 99, 132, 1)';
 
             // Create chart using Chart.js
             const ctx = document.getElementById(chartId).getContext('2d');
@@ -41,8 +53,8 @@
                     datasets: [{
                         label: label,
                         data: values,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: backgroundColor
+                        borderColor: borderColor,
                         borderWidth: 2,
                         fill: true
                     }]
