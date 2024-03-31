@@ -4,11 +4,27 @@
     <title>Fed Data Collection</title>
     <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+    .dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+    .dark-mode button {
+        border: none;
+    }
+    </style>
 </head>
 <body>
+    <body class="dark-mode">
+    <button id="darkModeToggle">🌓</button>
     <div id="charts"></div>
 
     <script>
+
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+        });
         // Define function to create a chart for a single JSON file
         const createChart = (data, chartId, label) => {
             // Extract data from observations arrayA
