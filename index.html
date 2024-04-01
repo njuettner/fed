@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+    .chart-container {
+        width: 50%;
+        float: left;
+    }
     .dark-mode {
         background-color: #121212;
         color: #ffffff;
@@ -97,6 +101,7 @@
         files.forEach((file, index) => {
             const chartId = `chart${index}`;
             const chartDiv = document.createElement('div');
+            chartDiv.className = 'chart-container';
             chartDiv.innerHTML = `<canvas id="${chartId}"></canvas>`;
             document.getElementById('charts').appendChild(chartDiv);
             fetch(`data/${file.name}`)
