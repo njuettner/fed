@@ -13,6 +13,14 @@
             background-color: #ffffff;
             color: #333;
         }
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
         .chart-container {
             width: 45%;
             margin: 2%;
@@ -21,6 +29,7 @@
             border-radius: 8px;
             padding: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         .dark-mode {
             background-color: #121212;
@@ -30,49 +39,66 @@
             background-color: #1e1e1e;
             box-shadow: none;
         }
-        .dark-mode button {
-            border: none;
-        }
-        #darkModeToggle {
+        /* Nicer toggle switch */
+        .toggle-switch {
             position: fixed;
-            right: 10px;
-            top: 10px;
-            background-color: transparent;
-            font-size: 1.2rem;
+            right: 20px;
+            top: 20px;
+            width: 56px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 14px;
             cursor: pointer;
         }
-        h1 {
-            margin-top: 0;
-            text-align: center;
+        .toggle-switch input {
+            display: none;
         }
-        .header-container {
-            text-align: center;
-            margin-bottom: 20px;
+        .toggle-switch label {
+            display: block;
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+        .toggle-switch input:checked + label {
+            transform: translateX(28px);
         }
     </style>
 </head>
 <body>
-    <button id="darkModeToggle">🌓</button>
+    <div class="header-container">
+        <h1>Fed Data Collection</h1>
+    </div>
+
+    <div class="toggle-switch">
+        <input type="checkbox" id="darkToggle" />
+        <label for="darkToggle"></label>
+    </div>
+
     <div id="charts"></div>
 
     <script>
+        // Toggle the dark mode
+        document.getElementById('darkToggle')
+            .addEventListener('change', () => {
+                document.body.classList.toggle('dark-mode');
+            });
 
-        document.getElementById('darkModeToggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-        });
         // Define function to create a chart for a single JSON file
         const createChart = (data, chartId, label) => {
-            // Extract data from observations arrayA
-			const labels = data.observations.slice(-150).map(obs => obs.date);
-            const values = data.observations.slice(-150).map(obs => Number(obs.value));
+            // Check if dark mode is active
+            const isDark = document.body.classList.contains('dark-mode');
+            const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
+            const borderColor = isDark ? '#ffffff' : '#1355FF';
 
-            // Set colors based on mode
-            const backgroundColor = 'rgba(137,170,255, 0.2)';
-            const borderColor = '#1355FF';
+            // Extract data from observations
+            const labels = data.observations.slice(-150).map(obs => obs.date);
+            const values = data.observations.slice(-150).map(obs => Number(obs.value));
 
             // Create chart using Chart.js
             const ctx = document.getElementById(chartId).getContext('2d');
-            const chart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -111,29 +137,22 @@
             { name: 'debt.json', label: 'Debt GDP Ratio' },
             { name: 'bitcoin.json', label: 'BTC' },
             { name: 'ethereum.json', label: 'ETH' },
-            { name: 'interest_payments.json', label: 'Federal government current expenditures - Interest payments ' },
-            { name: 'totalassets.json', label: 'Fed Balance Sheet - Total Assets' },
-            { name: 'fedfunds.json', label: 'Fed Funds Rate' },
-            { name: 'cpi_yoy.json', label: 'Consumer Price Index YoY' },
-            { name: 'treasury.json', label: 'Treasury Securities 1-Year' },
-            { name: 'bonds10y.json', label: 'Bonds 10 years' },
-            { name: 'unemployment.json', label: 'Unemployment Rate' },
-            { name: 'unfilled_vacancies.json', label: 'Unfilled Vacancies' },
-            { name: 'housing.json', label: 'Housing Starts' },
-            { name: 'eu.json', label: 'Euro' },
-            { name: 'oil.json', label: 'Oil' },
         ];
-        files.forEach((file, index) => {
-            const chartId = `chart${index}`;
-            const chartDiv = document.createElement('div');
+
+        const loadAndCreateChart = async (fileObj) => {
+            const response = await fetch(fileObj.name);
+            const data = await response.json();
+            const chartId = fileObj.name.replace('.json', 'Chart');
+
+            let chartDiv = document.createElement('div');
             chartDiv.className = 'chart-container';
             chartDiv.innerHTML = `<canvas id="${chartId}"></canvas>`;
             document.getElementById('charts').appendChild(chartDiv);
-            fetch(`data/${file.name}`)
-                .then(response => response.json())
-                .then(data => createChart(data, chartId, file.label))
-                .catch(error => console.error(error));
-        });
+
+            createChart(data, chartId, fileObj.label);
+        };
+
+        files.forEach(file => loadAndCreateChart(file));
     </script>
 </body>
 </html>
