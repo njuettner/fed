@@ -1,160 +1,160 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Fed Data Collection</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #ffffff;
-            color: #333;
-        }
-        h1 {
-            margin-top: 0;
-            text-align: center;
-        }
-        .header-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .chart-container {
-            width: 45%;
-            margin: 2%;
-            float: left;
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-        .dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        .dark-mode .chart-container {
-            background-color: #1e1e1e;
-            box-shadow: none;
-        }
-        /* Nicer toggle switch */
-        .toggle-switch {
-            position: fixed;
-            right: 20px;
-            top: 20px;
-            width: 56px;
-            height: 28px;
-            background: #ccc;
-            border-radius: 14px;
-            cursor: pointer;
-        }
-        .toggle-switch input {
-            display: none;
-        }
-        .toggle-switch label {
-            display: block;
-            width: 28px;
-            height: 28px;
-            background: #fff;
-            border-radius: 50%;
-            transition: transform 0.2s ease;
-        }
-        .toggle-switch input:checked + label {
-            transform: translateX(28px);
-        }
+      body {
+        font-family: "Roboto", sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #ffffff;
+        color: #333;
+      }
+      h1 {
+        margin-top: 0;
+        text-align: center;
+      }
+      .header-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .chart-container {
+        width: 45%;
+        margin: 2%;
+        float: left;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+      }
+      .dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+      .dark-mode .chart-container {
+        background-color: #1e1e1e;
+        box-shadow: none;
+      }
+      /* Nicer toggle switch */
+      .toggle-switch {
+        position: fixed;
+        right: 20px;
+        top: 20px;
+        width: 56px;
+        height: 28px;
+        background: #ccc;
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .toggle-switch input {
+        display: none;
+      }
+      .toggle-switch label {
+        display: block;
+        width: 28px;
+        height: 28px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s ease;
+      }
+      .toggle-switch input:checked + label {
+        transform: translateX(28px);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="header-container">
-        <h1>Fed Data Collection</h1>
+      <h1>Fed Data Collection</h1>
     </div>
 
     <div class="toggle-switch">
-        <input type="checkbox" id="darkToggle" />
-        <label for="darkToggle"></label>
+      <input type="checkbox" id="darkToggle" />
+      <label for="darkToggle"></label>
     </div>
 
     <div id="charts"></div>
 
     <script>
-        // Toggle the dark mode
-        document.getElementById('darkToggle')
-            .addEventListener('change', () => {
-                document.body.classList.toggle('dark-mode');
-            });
+              // Toggle the dark mode
+              document.getElementById('darkToggle')
+                  .addEventListener('change', () => {
+                      document.body.classList.toggle('dark-mode');
+                  });
 
-        // Define function to create a chart for a single JSON file
-        const createChart = (data, chartId, label) => {
-            // Check if dark mode is active
-            const isDark = document.body.classList.contains('dark-mode');
-            const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
-            const borderColor = isDark ? '#ffffff' : '#1355FF';
+              // Define function to create a chart for a single JSON file
+              const createChart = (data, chartId, label) => {
+                  // Check if dark mode is active
+                  const isDark = document.body.classList.contains('dark-mode');
+                  const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
+                  const borderColor = isDark ? '#ffffff' : '#1355FF';
 
-            // Extract data from observations
-            const labels = data.observations.slice(-150).map(obs => obs.date);
-            const values = data.observations.slice(-150).map(obs => Number(obs.value));
+                  // Extract data from observations
+                  const labels = data.observations.slice(-150).map(obs => obs.date);
+                  const values = data.observations.slice(-150).map(obs => Number(obs.value));
 
-            // Create chart using Chart.js
-            const ctx = document.getElementById(chartId).getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: values,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        borderWidth: 2,
-                        fill: true
-                    }]
-                },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            type: 'time',
-                            time: {
-                                unit: 'day'
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                }
-            });
-        };
+                  // Create chart using Chart.js
+                  const ctx = document.getElementById(chartId).getContext('2d');
+                  new Chart(ctx, {
+                      type: 'line',
+                      data: {
+                          labels: labels,
+                          datasets: [{
+                              label: label,
+                              data: values,
+                              backgroundColor: backgroundColor,
+                              borderColor: borderColor,
+                              borderWidth: 2,
+                              fill: true
+                          }]
+                      },
+                      options: {
+                          scales: {
+                              x: {
+                                  type: 'time',
+                                  time: {
+                                      unit: 'day'
+                                  }
+                              },
+                              y: {
+                                  beginAtZero: true
+                              }
+                          }
+                      }
+                  });
 
-        const dataDir = 'data/';
+              const dataDir = 'data/';
 
-        // Load JSON files and create charts
-        const files = [
-            { name: 'm1.json', label: 'Money Supply - M1' },
-            { name: 'm2.json', label: 'Money Supply - M2' },
-            { name: 'sahm.json', label: 'Sahm Rule Recession Indicator' },
-            { name: 'debt.json', label: 'Debt GDP Ratio' },
-            { name: 'bitcoin.json', label: 'BTC' },
-            { name: 'ethereum.json', label: 'ETH' },
-        ];
+              // Load JSON files and create charts
+              const files = [
+                  { name: 'm1.json', label: 'Money Supply - M1' },
+                  { name: 'm2.json', label: 'Money Supply - M2' },
+                  { name: 'sahm.json', label: 'Sahm Rule Recession Indicator' },
+                  { name: 'debt.json', label: 'Debt GDP Ratio' },
+                  { name: 'bitcoin.json', label: 'BTC' },
+                  { name: 'ethereum.json', label: 'ETH' },
+              ];
 
-        const loadAndCreateChart = async (fileObj) => {
-            const response = await fetch(dataDir + fileObj.name);
-            const data = await response.json();
-            const chartId = fileObj.name.replace('.json', 'Chart');
+              const loadAndCreateChart = async (fileObj) => {
+                  const response = await fetch(dataDir + fileObj.name);
+                  const data = await response.json();
+                  const chartId = fileObj.name.replace('.json', 'Chart');
 
-            let chartDiv = document.createElement('div');
-            chartDiv.className = 'chart-container';
-            chartDiv.innerHTML = `<canvas id="${chartId}"></canvas>`;
-            document.getElementById('charts').appendChild(chartDiv);
+                  let chartDiv = document.createElement('div');
+                  chartDiv.className = 'chart-container';
+                  chartDiv.innerHTML = `<canvas id="${chartId}"></canvas>`;
+                  document.getElementById('charts').appendChild(chartDiv);
 
-            createChart(data, chartId, fileObj.label);
-        };
+                  createChart(data, chartId, fileObj.label);
+              };
 
-        files.forEach(file => loadAndCreateChart(file));
+              files.forEach(file => loadAndCreateChart(file));
     </script>
-</body>
+  </body>
 </html>
