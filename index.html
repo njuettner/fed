@@ -134,11 +134,20 @@
             z-index: 1000;
             display: none;
             white-space: nowrap;
-            transition: opacity 0.2s ease;
-            opacity: 0;
+        }
+        /* Enhanced Tooltip Styling */
+        #tooltip {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(-10px);
         }
         #tooltip.display {
             opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -159,7 +168,7 @@
     </div>
 
     <!-- Tooltip Div -->
-    <div id="tooltip" role="tooltip"></div>
+    <div id="tooltip"></div>
 
     <script>
         // Store chart instances
@@ -289,6 +298,14 @@
             const labels = observations.map(obs => obs.date);
             const values = observations.map(obs => Number(obs.value));
 
+            const dataPointCount = values.length;
+            let dynamicBorderWidth = 0.5;
+            if (dataPointCount > 1000) {
+                dynamicBorderWidth = 0.3;
+            } else if (dataPointCount > 500) {
+                dynamicBorderWidth = 0.4;
+            }
+
             // Create chart using Chart.js
             const ctx = document.getElementById(chartId).getContext('2d');
             const chart = new Chart(ctx, {
@@ -300,13 +317,13 @@
                         data: values,
                         backgroundColor: backgroundColor,
                         borderColor: borderColor,
-                        borderWidth: 1, // Reduced line thickness from 2 to 1
+                        borderWidth: dynamicBorderWidth, // Use dynamic border width
                         fill: true,
                         tension: 0.4, // Makes the lines more curved and smooth
                         pointRadius: 3,
-                        pointHoverRadius: 5,
                         pointBackgroundColor: borderColor,
                         pointBorderColor: borderColor,
+                        pointHoverRadius: 5,
                         pointHoverBackgroundColor: borderColor,
                         pointHoverBorderColor: borderColor,
                     }]
@@ -362,10 +379,10 @@
                         chartLabelPlugin: {
                             color: isDark ? '#ffffff' : '#000000' // Set label color based on theme
                         },
-                        decimation: { // Added decimation plugin for data thinning
-                            enabled: true,
+                        decimation: {
+                            enabled: values.length > 500, // Enable decimation only if more than 500 data points
                             algorithm: 'min-max',
-                            samples: 100, // Adjust based on performance needs
+                            samples: 500, // Adjust based on performance needs
                         },
                     },
                     responsive: true,
@@ -414,11 +431,9 @@
 
                         tooltip.style.left = `${left}px`;
                         tooltip.style.top = `${top}px`;
-                        tooltip.classList.add('display');
                     } else {
                         // Hide tooltip
                         tooltip.style.display = 'none';
-                        tooltip.classList.remove('display');
                     }
                 }
             });
@@ -427,7 +442,6 @@
             chart.canvas.addEventListener('mouseleave', () => {
                 const tooltip = document.getElementById('tooltip');
                 tooltip.style.display = 'none';
-                tooltip.classList.remove('display');
             });
         };
 
