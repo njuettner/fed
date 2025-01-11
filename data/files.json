@@ -1,21 +1,21 @@
 {
     "files": [
-        { "name": "m1.json", "label": "Money Supply - M1", "startDate": "2018-01-01" },
-        { "name": "m2.json", "label": "Money Supply - M2", "startDate": "2018-01-01" },
-        { "name": "sahm.json", "label": "Sahm Rule Recession Indicator", "startDate": "2018-01-01" },
-        { "name": "debt.json", "label": "Debt GDP Ratio", "startDate": "2018-01-01" },
-        { "name": "interest_payments.json", "label": "Federal Government Current Expenditures - Interest Payments", "startDate": "2018-01-01" },
-        { "name": "totalassets.json", "label": "Fed Balance Sheet - Total Assets", "startDate": "2018-01-01" },
-        { "name": "fedfunds.json", "label": "Fed Funds Rate", "startDate": "2018-01-01" },
-        { "name": "cpi_yoy.json", "label": "Consumer Price Index YoY", "startDate": "2018-01-01" },
-        { "name": "treasury.json", "label": "Treasury Securities 1-Year", "startDate": "2018-01-01" },
-        { "name": "bonds10y.json", "label": "Bonds 10 Years", "startDate": "2018-01-01" },
-        { "name": "unemployment.json", "label": "Unemployment Rate", "startDate": "2018-01-01" },
-        { "name": "unfilled_vacancies.json", "label": "Unfilled Vacancies", "startDate": "2018-01-01" },
-        { "name": "housing.json", "label": "Housing Starts", "startDate": "2018-01-01" },
-        { "name": "eu.json", "label": "Euro", "startDate": "2018-01-01" },
-        { "name": "oil.json", "label": "Oil", "startDate": "2018-01-01" },
-        { "name": "bitcoin.json", "label": "BTC", "startDate": "2018-01-01" },
-        { "name": "ethereum.json", "label": "ETH", "startDate": "2018-01-01" }
+        { "name": "m1.json", "label": "M1", "startDate": "2018-01-01", "description": "M1 represents the money supply, including cash and checking deposits." },
+        { "name": "m2.json", "label": "M2", "startDate": "2018-01-01", "description": "M2 includes all of M1 plus savings accounts, money market accounts, and small time deposits." },
+        { "name": "sahm.json", "label": "Sahm Recession", "startDate": "2018-01-01", "description": "The Sahm Recession Indicator signals the onset of a recession based on unemployment trends." },
+        { "name": "debt.json", "label": "Debt GDP Ratio", "startDate": "2018-01-01", "description": "Shows the ratio of national debt to Gross Domestic Product (GDP)." },
+        { "name": "interest_payments.json", "label": "Fed Interest Payments", "startDate": "2018-01-01", "description": "Total interest payments made by the Federal Reserve." },
+        { "name": "totalassets.json", "label": "Fed Total Assets", "startDate": "2018-01-01", "description": "Total assets held by the Federal Reserve." },
+        { "name": "fedfunds.json", "label": "Fed Funds Rate", "startDate": "2018-01-01", "description": "The interest rate at which depository institutions trade federal funds with each other overnight." },
+        { "name": "cpi_yoy.json", "label": "CPI YoY", "startDate": "2018-01-01", "description": "Consumer Price Index Year-over-Year measures inflation based on average price changes." },
+        { "name": "treasury.json", "label": "Treasury Securities 1-Year", "startDate": "2018-01-01", "description": "Yields on 1-year U.S. Treasury securities." },
+        { "name": "bonds10y.json", "label": "Bonds 10 Years", "startDate": "2018-01-01", "description": "Yields on 10-year U.S. Treasury bonds." },
+        { "name": "unemployment.json", "label": "Unemployment Rate", "startDate": "2018-01-01", "description": "Percentage of the labor force that is unemployed and actively seeking employment." },
+        { "name": "unfilled_vacancies.json", "label": "Unfilled Vacancies", "startDate": "2018-01-01", "description": "Number of available job positions that are not filled." },
+        { "name": "housing.json", "label": "Housing Starts", "startDate": "2018-01-01", "description": "Number of new residential construction projects begun over a specific period." },
+        { "name": "eu.json", "label": "Euro", "startDate": "2018-01-01", "description": "Exchange rate of the Euro against the U.S. Dollar." },
+        { "name": "oil.json", "label": "Oil", "startDate": "2018-01-01", "description": "Price of Brent Crude Oil per barrel." },
+        { "name": "bitcoin.json", "label": "BTC", "startDate": "2018-01-01", "description": "Bitcoin cryptocurrency price in USD." },
+        { "name": "ethereum.json", "label": "ETH", "startDate": "2018-01-01", "description": "Ethereum cryptocurrency price in USD." }
     ]
 }

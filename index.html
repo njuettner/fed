@@ -122,6 +122,19 @@
             text-align: center;
             font-weight: bold;
         }
+        /* Tooltip Styling */
+        #tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +153,9 @@
         <!-- Chart containers will be dynamically inserted here -->
     </div>
 
+    <!-- Tooltip Div -->
+    <div id="tooltip"></div>
+
     <script>
         // Store chart instances
         window.charts = [];
@@ -157,8 +173,21 @@
                 ctx.font = `${fontSize}px ${fontStyle}`;
                 ctx.fillStyle = fontColor;
                 ctx.textAlign = 'right';
-                ctx.fillText(label, chart.width - 10, 10); 
+                ctx.fillText(label, chart.width - 10, 15); // Adjusted Y position to 15
                 ctx.restore();
+
+                // Measure label dimensions for tooltip detection
+                const textMetrics = ctx.measureText(label);
+                const labelWidth = textMetrics.width;
+                const labelHeight = fontSize; // Approximate height
+
+                // Store label area in chart options for hover detection
+                chart.config.options.plugins.chartLabelPlugin.labelArea = {
+                    x: chart.width - 10 - labelWidth,
+                    y: 15 - labelHeight,
+                    width: labelWidth,
+                    height: labelHeight
+                };
             }
         };
 
@@ -224,7 +253,7 @@
         };
 
         // Function to create a chart for a single JSON file
-        const createChart = (data, chartId, label, startDate) => {
+        const createChart = (data, chartId, label, description, startDate) => {
             // Check if dark mode is active
             const isDark = document.body.classList.contains('dark-mode');
             const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
@@ -340,6 +369,39 @@
             chartContainer.removeChild(spinner);
 
             window.charts.push(chart);
+
+            // Add mousemove event listener for tooltip
+            chart.canvas.addEventListener('mousemove', (event) => {
+                const tooltip = document.getElementById('tooltip');
+                const canvasRect = chart.canvas.getBoundingClientRect();
+                const mouseX = event.clientX - canvasRect.left;
+                const mouseY = event.clientY - canvasRect.top;
+
+                const labelArea = chart.options.plugins.chartLabelPlugin.labelArea;
+                if (labelArea) {
+                    if (
+                        mouseX >= labelArea.x &&
+                        mouseX <= labelArea.x + labelArea.width &&
+                        mouseY >= labelArea.y - labelArea.height &&
+                        mouseY <= labelArea.y + labelArea.height
+                    ) {
+                        // Show tooltip
+                        tooltip.innerHTML = description || "No description available.";
+                        tooltip.style.left = `${event.pageX + 10}px`;
+                        tooltip.style.top = `${event.pageY + 10}px`;
+                        tooltip.style.display = 'block';
+                    } else {
+                        // Hide tooltip
+                        tooltip.style.display = 'none';
+                    }
+                }
+            });
+
+            // Hide tooltip when mouse leaves the canvas
+            chart.canvas.addEventListener('mouseleave', () => {
+                const tooltip = document.getElementById('tooltip');
+                tooltip.style.display = 'none';
+            });
         };
 
         const dataDir = 'data/';
@@ -361,6 +423,7 @@
                     chartDiv.className = 'chart-container';
                     chartDiv.setAttribute('data-file', file.name);
                     chartDiv.setAttribute('data-label', file.label);
+                    chartDiv.setAttribute('data-description', file.description);
                     chartDiv.setAttribute('data-start-date', file.startDate); // Only startDate is set
                     chartDiv.innerHTML = `<canvas id="${file.name.replace('.json', 'Chart')}"></canvas>`;
                     document.getElementById('charts').appendChild(chartDiv);
@@ -373,6 +436,7 @@
                             const chartDiv = entry.target;
                             const fileName = chartDiv.getAttribute('data-file');
                             const label = chartDiv.getAttribute('data-label');
+                            const description = chartDiv.getAttribute('data-description');
                             const chartId = fileName.replace('.json', 'Chart');
                             const startDate = chartDiv.getAttribute('data-start-date');
 
@@ -386,7 +450,7 @@
                                         return response.json();
                                     })
                                     .then(chartData => {
-                                        createChart(chartData, chartId, label, startDate);
+                                        createChart(chartData, chartId, label, description, startDate);
                                         chartDiv.setAttribute('data-loaded', 'true'); // Mark as loaded
                                     })
                                     .catch(error => {
