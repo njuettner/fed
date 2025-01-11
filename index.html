@@ -4,19 +4,24 @@
     <title>Fed Data Collection</title>
     <meta charset="UTF-8" />
     <!-- Load Chart.js first -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <!-- Then load Luxon -->
-    <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1/build/global/luxon.min.js"></script>
     <!-- Then load Chart.js adapter for Luxon -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0/dist/chartjs-adapter-luxon.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
     <style>
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
         body {
             font-family: "Roboto", sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #ffffff;
-            color: #333;
+            background-color: #121212; /* Dark mode preferred */
+            color: #ffffff;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         h1 {
@@ -30,23 +35,20 @@
         .chart-grid {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            gap: 20px;
+            justify-content: center;
         }
         .chart-container {
-            width: 48%;
-            margin-bottom: 20px;
-            background: #f8f9fa;
+            width: 45%;
+            background: #1e1e1e;
             border-radius: 8px;
             padding: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: background 0.3s ease, box-shadow 0.3s ease;
             height: 300px; /* Fixed height for charts */
+            position: relative;
         }
-        .dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        .dark-mode .chart-container {
+        body.dark-mode .chart-container {
             background-color: #1e1e1e;
             box-shadow: none;
         }
@@ -57,10 +59,14 @@
             top: 20px;
             width: 60px;
             height: 34px;
-            background: #ccc;
+            background: #ffffff; /* White toggle switch */
             border-radius: 34px;
             cursor: pointer;
             transition: background 0.3s ease;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .toggle-switch {
+            background: #ffffff; /* Keep toggle switch white in dark mode */
         }
         .toggle-switch input {
             display: none;
@@ -69,31 +75,59 @@
             display: block;
             width: 26px;
             height: 26px;
-            background: #fff;
+            background: #333333; /* Dark knob for contrast */
             border-radius: 50%;
             position: absolute;
             top: 4px;
             left: 4px;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background 0.3s ease;
         }
         .toggle-switch input:checked + label {
             transform: translateX(26px);
+            background: #ffffff; /* White knob when toggled */
+        }
+        /* Remove default legends */
+        .chart-container canvas {
+            max-height: 100%;
+        }
+        /* Custom Legend Styling */
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .chart-legend span {
+            margin: 0 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .chart-legend span::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: currentColor;
+            margin-right: 5px;
+            border-radius: 2px;
         }
     </style>
 </head>
-<body>
+<body class="dark-mode">
     <div class="header-container">
         <h1>Fed Data Collection</h1>
     </div>
 
     <!-- Toggle Switch -->
     <div class="toggle-switch">
-        <input type="checkbox" id="darkToggle" />
+        <input type="checkbox" id="darkToggle" checked />
         <label for="darkToggle"></label>
     </div>
 
     <!-- Charts Grid -->
-    <div id="charts" class="chart-grid"></div>
+    <div id="charts" class="chart-grid">
+        <!-- Chart containers will be dynamically inserted here -->
+    </div>
 
     <script>
         // Store chart instances
@@ -109,21 +143,25 @@
         const updateChartsTheme = () => {
             const isDark = document.body.classList.contains('dark-mode');
             Chart.defaults.color = isDark ? '#ffffff' : '#333333';
-            Chart.defaults.backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
-            
+            Chart.defaults.borderColor = isDark ? '#ffffff' : '#333333';
+
             window.charts.forEach(chart => {
                 chart.data.datasets.forEach(dataset => {
                     dataset.backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
                     dataset.borderColor = isDark ? '#ffffff' : '#1355FF';
                 });
+                // Update scales
                 chart.options.scales.x.ticks.color = isDark ? '#ffffff' : '#333333';
                 chart.options.scales.y.ticks.color = isDark ? '#ffffff' : '#333333';
+                chart.options.scales.x.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)';
+                chart.options.scales.y.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)';
+                // Update legend
                 chart.options.plugins.legend.labels.color = isDark ? '#ffffff' : '#333333';
                 chart.update();
             });
         };
 
-        // Define function to create a chart for a single JSON file
+        // Function to create a chart for a single JSON file
         const createChart = (data, chartId, label) => {
             // Check if dark mode is active
             const isDark = document.body.classList.contains('dark-mode');
@@ -146,7 +184,14 @@
                         backgroundColor: backgroundColor,
                         borderColor: borderColor,
                         borderWidth: 2,
-                        fill: true
+                        fill: true,
+                        tension: 0.4, // Makes the lines more curved and smooth
+                        pointRadius: 3,
+                        pointBackgroundColor: borderColor,
+                        pointBorderColor: isDark ? '#ffffff' : '#1355FF',
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: isDark ? '#ffffff' : '#1355FF',
+                        pointHoverBorderColor: isDark ? '#ffffff' : '#1355FF',
                     }]
                 },
                 options: {
@@ -175,9 +220,7 @@
                     },
                     plugins: {
                         legend: {
-                            labels: {
-                                color: isDark ? '#ffffff' : '#333333'
-                            }
+                            display: false // Hide the default legend
                         },
                         tooltip: {
                             mode: 'index',
@@ -189,47 +232,99 @@
                 }
             });
 
+            // Create a custom legend
+            const chartContainer = document.getElementById(chartId).parentNode;
+            const legend = document.createElement('div');
+            legend.className = 'chart-legend';
+            const legendItem = document.createElement('span');
+            legendItem.textContent = label;
+            legend.style.color = borderColor;
+            legend.appendChild(legendItem);
+            chartContainer.appendChild(legend);
+
             window.charts.push(chart);
         };
 
         const dataDir = 'data/';
 
-        // Load JSON files and create charts
+        // Files to load
         const files = [
             { name: 'm1.json', label: 'Money Supply - M1' },
             { name: 'm2.json', label: 'Money Supply - M2' },
             { name: 'sahm.json', label: 'Sahm Rule Recession Indicator' },
             { name: 'debt.json', label: 'Debt GDP Ratio' },
+            { name: 'interest_payments.json', label: 'Federal Government Current Expenditures - Interest Payments' },
+            { name: 'totalassets.json', label: 'Fed Balance Sheet - Total Assets' },
+            { name: 'fedfunds.json', label: 'Fed Funds Rate' },
+            { name: 'cpi_yoy.json', label: 'Consumer Price Index YoY' },
+            { name: 'treasury.json', label: 'Treasury Securities 1-Year' },
+            { name: 'bonds10y.json', label: 'Bonds 10 Years' },
+            { name: 'unemployment.json', label: 'Unemployment Rate' },
+            { name: 'unfilled_vacancies.json', label: 'Unfilled Vacancies' },
+            { name: 'housing.json', label: 'Housing Starts' },
+            { name: 'eu.json', label: 'Euro' },
+            { name: 'oil.json', label: 'Oil' },
             { name: 'bitcoin.json', label: 'BTC' },
             { name: 'ethereum.json', label: 'ETH' },
         ];
 
-        const loadAndCreateChart = async (fileObj) => {
-            try {
-                const response = await fetch(dataDir + fileObj.name);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        // Create placeholder chart containers
+        files.forEach(file => {
+            let chartDiv = document.createElement('div');
+            chartDiv.className = 'chart-container';
+            chartDiv.setAttribute('data-file', file.name);
+            chartDiv.setAttribute('data-label', file.label);
+            chartDiv.innerHTML = `<canvas id="${file.name.replace('.json', 'Chart')}"></canvas>`;
+            document.getElementById('charts').appendChild(chartDiv);
+        });
+
+        // IntersectionObserver callback
+        const onIntersection = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const chartDiv = entry.target;
+                    const fileName = chartDiv.getAttribute('data-file');
+                    const label = chartDiv.getAttribute('data-label');
+                    const chartId = fileName.replace('.json', 'Chart');
+
+                    // Check if chart is already initialized
+                    if (!chartDiv.getAttribute('data-loaded')) {
+                        fetch(dataDir + fileName)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                createChart(data, chartId, label);
+                                chartDiv.setAttribute('data-loaded', 'true'); // Mark as loaded
+                            })
+                            .catch(error => {
+                                console.error(`Failed to load ${fileName}: `, error);
+                                // Display an error message in the UI
+                                chartDiv.innerHTML = `<p>Error loading ${label}</p>`;
+                            });
+
+                        // Stop observing this chartDiv
+                        observer.unobserve(chartDiv);
+                    }
                 }
-                const data = await response.json();
-                const chartId = fileObj.name.replace('.json', 'Chart');
-
-                let chartDiv = document.createElement('div');
-                chartDiv.className = 'chart-container';
-                chartDiv.innerHTML = `<canvas id="${chartId}"></canvas>`;
-                document.getElementById('charts').appendChild(chartDiv);
-
-                createChart(data, chartId, fileObj.label);
-            } catch (error) {
-                console.error(`Failed to load ${fileObj.name}: `, error);
-                // Display an error message in the UI
-                let errorDiv = document.createElement('div');
-                errorDiv.className = 'chart-container';
-                errorDiv.innerHTML = `<p>Error loading ${fileObj.label}</p>`;
-                document.getElementById('charts').appendChild(errorDiv);
-            }
+            });
         };
 
-        files.forEach(file => loadAndCreateChart(file));
+        // Create an IntersectionObserver
+        const observerOptions = {
+            root: null, // viewport
+            rootMargin: '0px',
+            threshold: 0.1 // 10% of the element is visible
+        };
+        const observer = new IntersectionObserver(onIntersection, observerOptions);
+
+        // Observe each chart container
+        document.querySelectorAll('.chart-container').forEach(chartDiv => {
+            observer.observe(chartDiv);
+        });
     </script>
 </body>
 </html>
