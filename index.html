@@ -129,6 +129,8 @@
             });
         };
 
+        const dataDir = 'data/';
+
         // Load JSON files and create charts
         const files = [
             { name: 'm1.json', label: 'Money Supply - M1' },
@@ -140,7 +142,7 @@
         ];
 
         const loadAndCreateChart = async (fileObj) => {
-            const response = await fetch(fileObj.name);
+            const response = await fetch(dataDir + fileObj.name);
             const data = await response.json();
             const chartId = fileObj.name.replace('.json', 'Chart');
 
