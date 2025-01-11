@@ -20,8 +20,8 @@
             font-family: "Roboto", sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #121212; /* Dark mode preferred */
-            color: #ffffff;
+            background-color: #ffffff; /* Light mode preferred */
+            color: #333333;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         h1 {
@@ -40,7 +40,7 @@
         }
         .chart-container {
             width: 45%;
-            background: #1e1e1e;
+            background: #f5f5f5;
             border-radius: 8px;
             padding: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -50,7 +50,7 @@
         }
         body.dark-mode .chart-container {
             background-color: #1e1e1e;
-            box-shadow: none;
+            box-shadow: 0 2px 8px rgba(255,255,255,0.1);
         }
         /* Improved toggle switch */
         .toggle-switch {
@@ -59,14 +59,14 @@
             top: 20px;
             width: 60px;
             height: 34px;
-            background: #ffffff; /* White toggle switch */
+            background: #cccccc; /* Light gray toggle switch */
             border-radius: 34px;
             cursor: pointer;
             transition: background 0.3s ease;
             box-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
         body.dark-mode .toggle-switch {
-            background: #ffffff; /* Keep toggle switch white in dark mode */
+            background: #888888; /* Darker toggle switch in dark mode */
         }
         .toggle-switch input {
             display: none;
@@ -75,7 +75,7 @@
             display: block;
             width: 26px;
             height: 26px;
-            background: #333333; /* Dark knob for contrast */
+            background: #ffffff; /* White knob for contrast */
             border-radius: 50%;
             position: absolute;
             top: 4px;
@@ -84,7 +84,7 @@
         }
         .toggle-switch input:checked + label {
             transform: translateX(26px);
-            background: #ffffff; /* White knob when toggled */
+            background: #ffffff; /* White knob remains white when toggled */
         }
         /* Remove default legends */
         .chart-container canvas {
@@ -111,16 +111,42 @@
             margin-right: 5px;
             border-radius: 2px;
         }
+        /* Loading Spinner */
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid rgba(0,0,0,0.1);
+            border-top: 4px solid #555555;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        body.dark-mode .loading-spinner {
+            border-top: 4px solid #ffffff;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        /* Error Message Styling */
+        .error-message {
+            color: #ff4d4d;
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
-<body class="dark-mode">
+<body>
     <div class="header-container">
         <h1>Fed Data Collection</h1>
     </div>
 
     <!-- Toggle Switch -->
     <div class="toggle-switch">
-        <input type="checkbox" id="darkToggle" checked />
+        <input type="checkbox" id="darkToggle" aria-label="Toggle Dark Mode" />
         <label for="darkToggle"></label>
     </div>
 
@@ -149,6 +175,10 @@
                 chart.data.datasets.forEach(dataset => {
                     dataset.backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
                     dataset.borderColor = isDark ? '#ffffff' : '#1355FF';
+                    dataset.pointBackgroundColor = isDark ? '#ffffff' : '#1355FF';
+                    dataset.pointBorderColor = isDark ? '#ffffff' : '#1355FF';
+                    dataset.pointHoverBackgroundColor = isDark ? '#ffffff' : '#1355FF';
+                    dataset.pointHoverBorderColor = isDark ? '#ffffff' : '#1355FF';
                 });
                 // Update scales
                 chart.options.scales.x.ticks.color = isDark ? '#ffffff' : '#333333';
@@ -168,9 +198,31 @@
             const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
             const borderColor = isDark ? '#ffffff' : '#1355FF';
 
-            // Extract data from observations
-            const labels = data.observations.slice(-150).map(obs => obs.date);
-            const values = data.observations.slice(-150).map(obs => Number(obs.value));
+            // Show loading spinner
+            const chartContainer = document.getElementById(chartId).parentNode;
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            chartContainer.appendChild(spinner);
+
+            // Extract data from observations within the specified time range
+            let observations = data.observations;
+            if (startDate || endDate) {
+                observations = observations.filter(obs => {
+                    const obsDate = new Date(obs.date);
+                    let afterStart = true;
+                    let beforeEnd = true;
+                    if (startDate) {
+                        afterStart = obsDate >= new Date(startDate);
+                    }
+                    if (endDate) {
+                        beforeEnd = obsDate <= new Date(endDate);
+                    }
+                    return afterStart && beforeEnd;
+                });
+            }
+
+            const labels = observations.map(obs => obs.date);
+            const values = observations.map(obs => Number(obs.value));
 
             // Create chart using Chart.js
             const ctx = document.getElementById(chartId).getContext('2d');
@@ -188,10 +240,10 @@
                         tension: 0.4, // Makes the lines more curved and smooth
                         pointRadius: 3,
                         pointBackgroundColor: borderColor,
-                        pointBorderColor: isDark ? '#ffffff' : '#1355FF',
+                        pointBorderColor: borderColor,
                         pointHoverRadius: 5,
-                        pointHoverBackgroundColor: isDark ? '#ffffff' : '#1355FF',
-                        pointHoverBorderColor: isDark ? '#ffffff' : '#1355FF',
+                        pointHoverBackgroundColor: borderColor,
+                        pointHoverBorderColor: borderColor,
                     }]
                 },
                 options: {
@@ -201,8 +253,8 @@
                             time: {
                                 unit: 'day'
                             },
-                            min: startDate, // Set minimum date
-                            max: endDate,   // Set maximum date
+                            min: startDate || undefined, // Set minimum date if specified
+                            max: endDate || undefined,   // Set maximum date if specified
                             ticks: {
                                 color: isDark ? '#ffffff' : '#333333'
                             },
@@ -234,8 +286,10 @@
                 }
             });
 
+            // Remove loading spinner
+            chartContainer.removeChild(spinner);
+
             // Create a custom legend
-            const chartContainer = document.getElementById(chartId).parentNode;
             const legend = document.createElement('div');
             legend.className = 'chart-legend';
             const legendItem = document.createElement('span');
@@ -285,6 +339,11 @@
 
                             // Check if chart is already initialized
                             if (!chartDiv.getAttribute('data-loaded')) {
+                                // Show loading spinner
+                                const spinner = document.createElement('div');
+                                spinner.className = 'loading-spinner';
+                                chartDiv.appendChild(spinner);
+
                                 fetch(dataDir + fileName)
                                     .then(response => {
                                         if (!response.ok) {
@@ -299,7 +358,7 @@
                                     .catch(error => {
                                         console.error(`Failed to load ${fileName}: `, error);
                                         // Display an error message in the UI
-                                        chartDiv.innerHTML = `<p>Error loading ${label}</p>`;
+                                        chartDiv.innerHTML = `<p class="error-message">Error loading ${label}</p>`;
                                     });
 
                                 // Stop observing this chartDiv
@@ -321,9 +380,33 @@
                 document.querySelectorAll('.chart-container').forEach(chartDiv => {
                     observer.observe(chartDiv);
                 });
+
+                // Initialize the toggle switch based on user's preference (optional)
+                // For example, save preference in localStorage
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme) {
+                    if (savedTheme === 'dark') {
+                        document.body.classList.add('dark-mode');
+                        document.getElementById('darkToggle').checked = true;
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        document.getElementById('darkToggle').checked = false;
+                    }
+                }
+
+                // Update localStorage when theme is toggled
+                document.getElementById('darkToggle').addEventListener('change', () => {
+                    if (document.body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                    }
+                });
             })
             .catch(error => {
                 console.error('Failed to load files.json:', error);
+                // Optionally display an error message in the UI
+                document.getElementById('charts').innerHTML = `<p class="error-message">Failed to load chart configurations.</p>`;
             });
     </script>
 </body>
