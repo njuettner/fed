@@ -165,6 +165,24 @@
         // Store chart instances
         window.charts = [];
 
+        // Custom Plugin to add label inside the chart at top right
+        const chartLabelPlugin = {
+            id: 'chartLabelPlugin',
+            afterDraw: (chart) => {
+                const ctx = chart.ctx;
+                const label = chart.config.data.datasets[0].label;
+                const fontSize = 16;
+                const fontStyle = 'Arial';
+                const fontColor = chart.config.options.plugins.chartLabelPlugin.color || '#000';
+                ctx.save();
+                ctx.font = `${fontSize}px ${fontStyle}`;
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = 'right';
+                ctx.fillText(label, chart.width - 10, 20);
+                ctx.restore();
+            }
+        };
+
         // Function to apply theme from localStorage
         const applySavedTheme = () => {
             const savedTheme = localStorage.getItem('theme');
@@ -217,6 +235,10 @@
                     chart.options.scales.x.time.displayFormats = {
                         day: 'dd MMM yyyy' // Display day, month, and year
                     };
+                }
+                // Update label color in the plugin
+                if (chart.options.plugins.chartLabelPlugin) {
+                    chart.options.plugins.chartLabelPlugin.color = isDark ? '#ffffff' : '#000000';
                 }
                 chart.update(); // Ensure the chart updates with new colors
             });
@@ -317,15 +339,19 @@
                                     return luxon.DateTime.fromISO(date).toFormat('dd MMM yyyy');
                                 }
                             }
+                        },
+                        chartLabelPlugin: {
+                            color: isDark ? '#ffffff' : '#000000' // Set label color based on theme
                         }
                     },
                     responsive: true,
                     maintainAspectRatio: false
-                }
+                },
+                plugins: [chartLabelPlugin] // Register the custom plugin
             });
 
             // Remove loading spinner after chart is ready
-            // Chart.js does not have a 'ready' event, so remove spinner immediately after creation
+            // Chart.js renders charts synchronously, so remove spinner immediately
             chartContainer.removeChild(spinner);
 
             // Create a custom legend
