@@ -295,7 +295,7 @@
                         data: values,
                         backgroundColor: backgroundColor,
                         borderColor: borderColor,
-                        borderWidth: 2,
+                        borderWidth: 1, // Reduced line thickness from 2 to 1
                         fill: true,
                         tension: 0.4, // Makes the lines more curved and smooth
                         pointRadius: 3,
@@ -356,7 +356,12 @@
                         },
                         chartLabelPlugin: {
                             color: isDark ? '#ffffff' : '#000000' // Set label color based on theme
-                        }
+                        },
+                        decimation: { // Added decimation plugin for data thinning
+                            enabled: true,
+                            algorithm: 'min-max',
+                            samples: 1000, // Adjust based on performance needs
+                        },
                     },
                     responsive: true,
                     maintainAspectRatio: false
