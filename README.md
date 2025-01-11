@@ -1,5 +1,7 @@
 # Fed Data Collection and Visualization
 
+https://juni.io/fed/
+
 This repository contains a collection of tools for gathering FED data information such as money supply, consumer price index, ... .
 
 <p align="center"><img src="screenshots/demo.png" width="150"></p>
@@ -11,10 +13,6 @@ This repository contains a collection of tools for gathering FED data informatio
 - Collects different data from FED St.Louis Web Service.
 - Updates every day automatically via GH action.
 - Provides a webserver with all collected data, used as data source (JSON), for easy visualization in a Grafana dashboard.
-
-## Usage
-
-TBD
 
 ## Dependencies
 
