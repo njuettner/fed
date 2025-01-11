@@ -172,7 +172,7 @@
                 ctx.save();
                 ctx.font = `${fontSize}px ${fontStyle}`;
                 ctx.fillStyle = fontColor;
-                ctx.textAlign = 'left';
+                ctx.textAlign = 'right';
                 ctx.fillText(label, chart.width - 10, 15); // Adjusted Y position to 15
                 ctx.restore();
 
@@ -387,9 +387,23 @@
                     ) {
                         // Show tooltip
                         tooltip.innerHTML = description || "No description available.";
-                        tooltip.style.left = `${event.pageX + 10}px`;
-                        tooltip.style.top = `${event.pageY + 10}px`;
                         tooltip.style.display = 'block';
+
+                        const tooltipWidth = tooltip.offsetWidth;
+                        const tooltipHeight = tooltip.offsetHeight;
+                        let left = event.pageX + 10;
+                        let top = event.pageY + 10;
+
+                        // Adjust tooltip position to stay within viewport
+                        if (left + tooltipWidth > window.innerWidth) {
+                            left = event.pageX - tooltipWidth - 10;
+                        }
+                        if (top + tooltipHeight > window.innerHeight) {
+                            top = event.pageY - tooltipHeight - 10;
+                        }
+
+                        tooltip.style.left = `${left}px`;
+                        tooltip.style.top = `${top}px`;
                     } else {
                         // Hide tooltip
                         tooltip.style.display = 'none';
