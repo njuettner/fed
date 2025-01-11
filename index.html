@@ -4,25 +4,51 @@
     <title>Fed Data Collection</title>
     <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <style>
-    .chart-container {
-        width: 50%;
-        float: left;
-    }
-    .dark-mode {
-        background-color: #121212;
-        color: #ffffff;
-    }
-
-    .dark-mode button {
-        border: none;
-    }
-    #darkModeToggle {
-        position: fixed;
-        right: 10px;
-        top: 10px;
-        background-color: transparent;
-    }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+            color: #333;
+        }
+        .chart-container {
+            width: 45%;
+            margin: 2%;
+            float: left;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .dark-mode .chart-container {
+            background-color: #1e1e1e;
+            box-shadow: none;
+        }
+        .dark-mode button {
+            border: none;
+        }
+        #darkModeToggle {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            background-color: transparent;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
