@@ -96,27 +96,6 @@
         .chart-container canvas {
             max-height: 100%;
         }
-        /* Custom Legend Styling */
-        .chart-legend {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .chart-legend span {
-            margin: 0 10px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-        }
-        .chart-legend span::before {
-            content: '';
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background-color: currentColor;
-            margin-right: 5px;
-            border-radius: 2px;
-        }
         /* Loading Spinner */
         .loading-spinner {
             position: absolute;
@@ -178,7 +157,7 @@
                 ctx.font = `${fontSize}px ${fontStyle}`;
                 ctx.fillStyle = fontColor;
                 ctx.textAlign = 'right';
-                ctx.fillText(label, chart.width - 10, 20);
+                ctx.fillText(label, chart.width - 10, 15);
                 ctx.restore();
             }
         };
@@ -353,15 +332,6 @@
             // Remove loading spinner after chart is ready
             // Chart.js renders charts synchronously, so remove spinner immediately
             chartContainer.removeChild(spinner);
-
-            // Create a custom legend
-            const legend = document.createElement('div');
-            legend.className = 'chart-legend';
-            const legendItem = document.createElement('span');
-            legendItem.textContent = label;
-            legend.style.color = borderColor;
-            legend.appendChild(legendItem);
-            chartContainer.appendChild(legend);
 
             window.charts.push(chart);
         };
