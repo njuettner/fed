@@ -59,14 +59,14 @@
             top: 20px;
             width: 60px;
             height: 34px;
-            background: #888888; /* Darker toggle switch in dark mode */
+            background: #cccccc; /* Light gray toggle switch */
             border-radius: 34px;
             cursor: pointer;
             transition: background 0.3s ease;
             box-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
         body.dark-mode .toggle-switch {
-            background: #cccccc; /* Light gray toggle switch */
+            background: #888888; /* Darker toggle switch in dark mode */
         }
         .toggle-switch input {
             display: none;
@@ -81,10 +81,16 @@
             top: 4px;
             left: 4px;
             transition: transform 0.2s ease, background 0.3s ease;
+            cursor: pointer; /* Ensure pointer cursor on hover */
         }
         .toggle-switch input:checked + label {
             transform: translateX(26px);
             background: #ffffff; /* White knob remains white when toggled */
+        }
+        /* Increase clickable area for toggle */
+        .toggle-switch label {
+            width: 26px;
+            height: 26px;
         }
         /* Remove default legends */
         .chart-container canvas {
@@ -212,7 +218,7 @@
                         day: 'dd MMM yyyy' // Display day, month, and year
                     };
                 }
-                chart.update();
+                chart.update(); // Ensure the chart updates with new colors
             });
         };
 
@@ -318,7 +324,8 @@
                 }
             });
 
-            // Remove loading spinner
+            // Remove loading spinner after chart is ready
+            // Chart.js does not have a 'ready' event, so remove spinner immediately after creation
             chartContainer.removeChild(spinner);
 
             // Create a custom legend
@@ -382,6 +389,11 @@
                                     })
                                     .catch(error => {
                                         console.error(`Failed to load ${fileName}: `, error);
+                                        // Remove spinner if present
+                                        const spinner = chartDiv.querySelector('.loading-spinner');
+                                        if (spinner) {
+                                            chartDiv.removeChild(spinner);
+                                        }
                                         // Display an error message in the UI
                                         chartDiv.innerHTML = `<p class="error-message">Error loading ${label}</p>`;
                                     });
