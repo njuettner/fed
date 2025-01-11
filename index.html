@@ -203,7 +203,15 @@
                 chart.options.scales.x.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)';
                 chart.options.scales.y.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)';
                 // Update legend
-                chart.options.plugins.legend.labels.color = isDark ? '#ffffff' : '#333333';
+                if (chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+                    chart.options.plugins.legend.labels.color = isDark ? '#ffffff' : '#333333';
+                }
+                // Update display formats to include year
+                if (chart.options.scales.x.time) {
+                    chart.options.scales.x.time.displayFormats = {
+                        day: 'dd MMM yyyy' // Display day, month, and year
+                    };
+                }
                 chart.update();
             });
         };
@@ -267,7 +275,10 @@
                         x: {
                             type: 'time',
                             time: {
-                                unit: 'day'
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'dd MMM yyyy' // Display day, month, and year
+                                }
                             },
                             min: startDate || undefined, // Set minimum date if specified
                             ticks: {
@@ -293,7 +304,13 @@
                         },
                         tooltip: {
                             mode: 'index',
-                            intersect: false
+                            intersect: false,
+                            callbacks: {
+                                title: function(context) {
+                                    const date = context[0].label;
+                                    return luxon.DateTime.fromISO(date).toFormat('dd MMM yyyy');
+                                }
+                            }
                         }
                     },
                     responsive: true,
@@ -335,7 +352,7 @@
                     chartDiv.className = 'chart-container';
                     chartDiv.setAttribute('data-file', file.name);
                     chartDiv.setAttribute('data-label', file.label);
-                    chartDiv.setAttribute('data-start-date', file.startDate); // Optional
+                    chartDiv.setAttribute('data-start-date', file.startDate); // Only startDate is set
                     chartDiv.innerHTML = `<canvas id="${file.name.replace('.json', 'Chart')}"></canvas>`;
                     document.getElementById('charts').appendChild(chartDiv);
                 });
