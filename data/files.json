@@ -1,0 +1,21 @@
+{
+    "files": [
+        { "name": "m1.json", "label": "Money Supply - M1" },
+        { "name": "m2.json", "label": "Money Supply - M2" },
+        { "name": "sahm.json", "label": "Sahm Rule Recession Indicator" },
+        { "name": "debt.json", "label": "Debt GDP Ratio" },
+        { "name": "interest_payments.json", "label": "Federal Government Current Expenditures - Interest Payments" },
+        { "name": "totalassets.json", "label": "Fed Balance Sheet - Total Assets" },
+        { "name": "fedfunds.json", "label": "Fed Funds Rate" },
+        { "name": "cpi_yoy.json", "label": "Consumer Price Index YoY" },
+        { "name": "treasury.json", "label": "Treasury Securities 1-Year" },
+        { "name": "bonds10y.json", "label": "Bonds 10 Years" },
+        { "name": "unemployment.json", "label": "Unemployment Rate" },
+        { "name": "unfilled_vacancies.json", "label": "Unfilled Vacancies" },
+        { "name": "housing.json", "label": "Housing Starts" },
+        { "name": "eu.json", "label": "Euro" },
+        { "name": "oil.json", "label": "Oil" },
+        { "name": "bitcoin.json", "label": "BTC" },
+        { "name": "ethereum.json", "label": "ETH" }
+    ]
+}

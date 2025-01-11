@@ -35,7 +35,7 @@
         .chart-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 30px; /* Increased spacing */
             justify-content: center;
         }
         .chart-container {
@@ -162,7 +162,7 @@
         };
 
         // Function to create a chart for a single JSON file
-        const createChart = (data, chartId, label) => {
+        const createChart = (data, chartId, label, startDate, endDate) => {
             // Check if dark mode is active
             const isDark = document.body.classList.contains('dark-mode');
             const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
@@ -201,6 +201,8 @@
                             time: {
                                 unit: 'day'
                             },
+                            min: startDate, // Set minimum date
+                            max: endDate,   // Set maximum date
                             ticks: {
                                 color: isDark ? '#ffffff' : '#333333'
                             },
@@ -247,84 +249,82 @@
 
         const dataDir = 'data/';
 
-        // Files to load
-        const files = [
-            { name: 'm1.json', label: 'Money Supply - M1' },
-            { name: 'm2.json', label: 'Money Supply - M2' },
-            { name: 'sahm.json', label: 'Sahm Rule Recession Indicator' },
-            { name: 'debt.json', label: 'Debt GDP Ratio' },
-            { name: 'interest_payments.json', label: 'Federal Government Current Expenditures - Interest Payments' },
-            { name: 'totalassets.json', label: 'Fed Balance Sheet - Total Assets' },
-            { name: 'fedfunds.json', label: 'Fed Funds Rate' },
-            { name: 'cpi_yoy.json', label: 'Consumer Price Index YoY' },
-            { name: 'treasury.json', label: 'Treasury Securities 1-Year' },
-            { name: 'bonds10y.json', label: 'Bonds 10 Years' },
-            { name: 'unemployment.json', label: 'Unemployment Rate' },
-            { name: 'unfilled_vacancies.json', label: 'Unfilled Vacancies' },
-            { name: 'housing.json', label: 'Housing Starts' },
-            { name: 'eu.json', label: 'Euro' },
-            { name: 'oil.json', label: 'Oil' },
-            { name: 'bitcoin.json', label: 'BTC' },
-            { name: 'ethereum.json', label: 'ETH' },
-        ];
-
-        // Create placeholder chart containers
-        files.forEach(file => {
-            let chartDiv = document.createElement('div');
-            chartDiv.className = 'chart-container';
-            chartDiv.setAttribute('data-file', file.name);
-            chartDiv.setAttribute('data-label', file.label);
-            chartDiv.innerHTML = `<canvas id="${file.name.replace('.json', 'Chart')}"></canvas>`;
-            document.getElementById('charts').appendChild(chartDiv);
-        });
-
-        // IntersectionObserver callback
-        const onIntersection = (entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const chartDiv = entry.target;
-                    const fileName = chartDiv.getAttribute('data-file');
-                    const label = chartDiv.getAttribute('data-label');
-                    const chartId = fileName.replace('.json', 'Chart');
-
-                    // Check if chart is already initialized
-                    if (!chartDiv.getAttribute('data-loaded')) {
-                        fetch(dataDir + fileName)
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`HTTP error! status: ${response.status}`);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                createChart(data, chartId, label);
-                                chartDiv.setAttribute('data-loaded', 'true'); // Mark as loaded
-                            })
-                            .catch(error => {
-                                console.error(`Failed to load ${fileName}: `, error);
-                                // Display an error message in the UI
-                                chartDiv.innerHTML = `<p>Error loading ${label}</p>`;
-                            });
-
-                        // Stop observing this chartDiv
-                        observer.unobserve(chartDiv);
-                    }
+        // Fetch the files list from files.json
+        fetch(`${dataDir}files.json`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                return response.json();
+            })
+            .then(data => {
+                const files = data.files;
+
+                // Create placeholder chart containers
+                files.forEach(file => {
+                    let chartDiv = document.createElement('div');
+                    chartDiv.className = 'chart-container';
+                    chartDiv.setAttribute('data-file', file.name);
+                    chartDiv.setAttribute('data-label', file.label);
+                    chartDiv.setAttribute('data-start-date', file.startDate); // Optional
+                    chartDiv.setAttribute('data-end-date', file.endDate);     // Optional
+                    chartDiv.innerHTML = `<canvas id="${file.name.replace('.json', 'Chart')}"></canvas>`;
+                    document.getElementById('charts').appendChild(chartDiv);
+                });
+
+                // IntersectionObserver callback
+                const onIntersection = (entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const chartDiv = entry.target;
+                            const fileName = chartDiv.getAttribute('data-file');
+                            const label = chartDiv.getAttribute('data-label');
+                            const chartId = fileName.replace('.json', 'Chart');
+                            const startDate = chartDiv.getAttribute('data-start-date');
+                            const endDate = chartDiv.getAttribute('data-end-date');
+
+                            // Check if chart is already initialized
+                            if (!chartDiv.getAttribute('data-loaded')) {
+                                fetch(dataDir + fileName)
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`HTTP error! status: ${response.status}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(chartData => {
+                                        createChart(chartData, chartId, label, startDate, endDate);
+                                        chartDiv.setAttribute('data-loaded', 'true'); // Mark as loaded
+                                    })
+                                    .catch(error => {
+                                        console.error(`Failed to load ${fileName}: `, error);
+                                        // Display an error message in the UI
+                                        chartDiv.innerHTML = `<p>Error loading ${label}</p>`;
+                                    });
+
+                                // Stop observing this chartDiv
+                                observer.unobserve(chartDiv);
+                            }
+                        }
+                    });
+                };
+
+                // Create an IntersectionObserver
+                const observerOptions = {
+                    root: null, // viewport
+                    rootMargin: '0px',
+                    threshold: 0.1 // 10% of the element is visible
+                };
+                const observer = new IntersectionObserver(onIntersection, observerOptions);
+
+                // Observe each chart container
+                document.querySelectorAll('.chart-container').forEach(chartDiv => {
+                    observer.observe(chartDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Failed to load files.json:', error);
             });
-        };
-
-        // Create an IntersectionObserver
-        const observerOptions = {
-            root: null, // viewport
-            rootMargin: '0px',
-            threshold: 0.1 // 10% of the element is visible
-        };
-        const observer = new IntersectionObserver(onIntersection, observerOptions);
-
-        // Observe each chart container
-        document.querySelectorAll('.chart-container').forEach(chartDiv => {
-            observer.observe(chartDiv);
-        });
     </script>
 </body>
 </html>
