@@ -1,163 +1,235 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Fed Data Collection</title>
     <meta charset="UTF-8" />
-    <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+    <!-- Load Chart.js first -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Then load Luxon -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+    <!-- Then load Chart.js adapter for Luxon -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
     <style>
-      body {
-        font-family: "Roboto", sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #ffffff;
-        color: #333;
-      }
-      h1 {
-        margin-top: 0;
-        text-align: center;
-      }
-      .header-container {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .chart-container {
-        width: 45%;
-        margin: 2%;
-        float: left;
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: background 0.3s ease, box-shadow 0.3s ease;
-      }
-      .dark-mode {
-        background-color: #121212;
-        color: #ffffff;
-      }
-      .dark-mode .chart-container {
-        background-color: #1e1e1e;
-        box-shadow: none;
-      }
-      /* Nicer toggle switch */
-      .toggle-switch {
-        position: fixed;
-        right: 20px;
-        top: 20px;
-        width: 56px;
-        height: 28px;
-        background: #ccc;
-        border-radius: 14px;
-        cursor: pointer;
-      }
-      .toggle-switch input {
-        display: none;
-      }
-      .toggle-switch label {
-        display: block;
-        width: 28px;
-        height: 28px;
-        background: #fff;
-        border-radius: 50%;
-        transition: transform 0.2s ease;
-      }
-      .toggle-switch input:checked + label {
-        transform: translateX(28px);
-      }
+        body {
+            font-family: "Roboto", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .chart-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .chart-container {
+            width: 48%;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            height: 300px; /* Fixed height for charts */
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .dark-mode .chart-container {
+            background-color: #1e1e1e;
+            box-shadow: none;
+        }
+        /* Improved toggle switch */
+        .toggle-switch {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 60px;
+            height: 34px;
+            background: #ccc;
+            border-radius: 34px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .toggle-switch input {
+            display: none;
+        }
+        .toggle-switch label {
+            display: block;
+            width: 26px;
+            height: 26px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            transition: transform 0.2s ease;
+        }
+        .toggle-switch input:checked + label {
+            transform: translateX(26px);
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="header-container">
-      <h1>Fed Data Collection</h1>
+        <h1>Fed Data Collection</h1>
     </div>
 
+    <!-- Toggle Switch -->
     <div class="toggle-switch">
-      <input type="checkbox" id="darkToggle" />
-      <label for="darkToggle"></label>
+        <input type="checkbox" id="darkToggle" />
+        <label for="darkToggle"></label>
     </div>
 
-    <div id="charts"></div>
+    <!-- Charts Grid -->
+    <div id="charts" class="chart-grid"></div>
 
     <script>
-              // Toggle the dark mode
-              document.getElementById('darkToggle')
-                  .addEventListener('change', () => {
-                      document.body.classList.toggle('dark-mode');
-                  });
+        // Store chart instances
+        window.charts = [];
 
-              // Define function to create a chart for a single JSON file
-              const createChart = (data, chartId, label) => {
-                  // Check if dark mode is active
-                  const isDark = document.body.classList.contains('dark-mode');
-                  const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
-                  const borderColor = isDark ? '#ffffff' : '#1355FF';
+        // Toggle the dark mode
+        document.getElementById('darkToggle').addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode');
+            updateChartsTheme();
+        });
 
-                  // Extract data from observations
-                  const labels = data.observations.slice(-150).map(obs => obs.date);
-                  const values = data.observations.slice(-150).map(obs => Number(obs.value));
+        // Function to update charts' colors based on theme
+        const updateChartsTheme = () => {
+            const isDark = document.body.classList.contains('dark-mode');
+            Chart.defaults.color = isDark ? '#ffffff' : '#333333';
+            Chart.defaults.backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
+            
+            window.charts.forEach(chart => {
+                chart.data.datasets.forEach(dataset => {
+                    dataset.backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
+                    dataset.borderColor = isDark ? '#ffffff' : '#1355FF';
+                });
+                chart.options.scales.x.ticks.color = isDark ? '#ffffff' : '#333333';
+                chart.options.scales.y.ticks.color = isDark ? '#ffffff' : '#333333';
+                chart.options.plugins.legend.labels.color = isDark ? '#ffffff' : '#333333';
+                chart.update();
+            });
+        };
 
-                  // Create chart using Chart.js
-                  const ctx = document.getElementById(chartId).getContext('2d');
-                  new Chart(ctx, {
-                      type: 'line',
-                      data: {
-                          labels: labels,
-                          datasets: [{
-                              label: label,
-                              data: values,
-                              backgroundColor: backgroundColor,
-                              borderColor: borderColor,
-                              borderWidth: 2,
-                              fill: true
-                          }]
-                      },
-                      options: {
-                          scales: {
-                              x: {
-                                  type: 'time',
-                                  time: {
-                                      unit: 'day'
-                                  }
-                              },
-                              y: {
-                                  beginAtZero: true
-                              }
-                          }
-                      }
-                  });
-                };
+        // Define function to create a chart for a single JSON file
+        const createChart = (data, chartId, label) => {
+            // Check if dark mode is active
+            const isDark = document.body.classList.contains('dark-mode');
+            const backgroundColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(137,170,255, 0.2)';
+            const borderColor = isDark ? '#ffffff' : '#1355FF';
 
-              const dataDir = 'data/';
+            // Extract data from observations
+            const labels = data.observations.slice(-150).map(obs => obs.date);
+            const values = data.observations.slice(-150).map(obs => Number(obs.value));
 
-              // Load JSON files and create charts
-              const files = [
-                  { name: 'm1.json', label: 'Money Supply - M1' },
-                  { name: 'm2.json', label: 'Money Supply - M2' },
-                  { name: 'sahm.json', label: 'Sahm Rule Recession Indicator' },
-                  { name: 'debt.json', label: 'Debt GDP Ratio' },
-                  { name: 'bitcoin.json', label: 'BTC' },
-                  { name: 'ethereum.json', label: 'ETH' },
-              ];
+            // Create chart using Chart.js
+            const ctx = document.getElementById(chartId).getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: values,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
+                            },
+                            ticks: {
+                                color: isDark ? '#ffffff' : '#333333'
+                            },
+                            grid: {
+                                color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: isDark ? '#ffffff' : '#333333'
+                            },
+                            grid: {
+                                color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: isDark ? '#ffffff' : '#333333'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
 
-              const loadAndCreateChart = async (fileObj) => {
-                  const response = await fetch(dataDir + fileObj.name);
-                  const data = await response.json();
-                  const chartId = fileObj.name.replace('.json', 'Chart');
+            window.charts.push(chart);
+        };
 
-                  let chartDiv = document.createElement('div');
-                  chartDiv.className = 'chart-container';
-                  chartDiv.innerHTML = `<canvas id="${chartId}"></canvas>`;
-                  document.getElementById('charts').appendChild(chartDiv);
+        const dataDir = 'data/';
 
-                  createChart(data, chartId, fileObj.label);
-              };
+        // Load JSON files and create charts
+        const files = [
+            { name: 'm1.json', label: 'Money Supply - M1' },
+            { name: 'm2.json', label: 'Money Supply - M2' },
+            { name: 'sahm.json', label: 'Sahm Rule Recession Indicator' },
+            { name: 'debt.json', label: 'Debt GDP Ratio' },
+            { name: 'bitcoin.json', label: 'BTC' },
+            { name: 'ethereum.json', label: 'ETH' },
+        ];
 
-              files.forEach(file => loadAndCreateChart(file));
+        const loadAndCreateChart = async (fileObj) => {
+            try {
+                const response = await fetch(dataDir + fileObj.name);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const chartId = fileObj.name.replace('.json', 'Chart');
+
+                let chartDiv = document.createElement('div');
+                chartDiv.className = 'chart-container';
+                chartDiv.innerHTML = `<canvas id="${chartId}"></canvas>`;
+                document.getElementById('charts').appendChild(chartDiv);
+
+                createChart(data, chartId, fileObj.label);
+            } catch (error) {
+                console.error(`Failed to load ${fileObj.name}: `, error);
+                // Display an error message in the UI
+                let errorDiv = document.createElement('div');
+                errorDiv.className = 'chart-container';
+                errorDiv.innerHTML = `<p>Error loading ${fileObj.label}</p>`;
+                document.getElementById('charts').appendChild(errorDiv);
+            }
+        };
+
+        files.forEach(file => loadAndCreateChart(file));
     </script>
-  </body>
+</body>
 </html>
