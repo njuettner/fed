@@ -134,6 +134,11 @@
             z-index: 1000;
             display: none;
             white-space: nowrap;
+            transition: opacity 0.2s ease;
+            opacity: 0;
+        }
+        #tooltip.display {
+            opacity: 1;
         }
     </style>
 </head>
@@ -154,7 +159,7 @@
     </div>
 
     <!-- Tooltip Div -->
-    <div id="tooltip"></div>
+    <div id="tooltip" role="tooltip"></div>
 
     <script>
         // Store chart instances
@@ -299,9 +304,9 @@
                         fill: true,
                         tension: 0.4, // Makes the lines more curved and smooth
                         pointRadius: 3,
+                        pointHoverRadius: 5,
                         pointBackgroundColor: borderColor,
                         pointBorderColor: borderColor,
-                        pointHoverRadius: 5,
                         pointHoverBackgroundColor: borderColor,
                         pointHoverBorderColor: borderColor,
                     }]
@@ -409,9 +414,11 @@
 
                         tooltip.style.left = `${left}px`;
                         tooltip.style.top = `${top}px`;
+                        tooltip.classList.add('display');
                     } else {
                         // Hide tooltip
                         tooltip.style.display = 'none';
+                        tooltip.classList.remove('display');
                     }
                 }
             });
@@ -420,6 +427,7 @@
             chart.canvas.addEventListener('mouseleave', () => {
                 const tooltip = document.getElementById('tooltip');
                 tooltip.style.display = 'none';
+                tooltip.classList.remove('display');
             });
         };
 
