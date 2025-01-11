@@ -1,21 +1,21 @@
 {
     "files": [
-        { "name": "m1.json", "label": "Money Supply - M1" },
-        { "name": "m2.json", "label": "Money Supply - M2" },
-        { "name": "sahm.json", "label": "Sahm Rule Recession Indicator" },
-        { "name": "debt.json", "label": "Debt GDP Ratio" },
-        { "name": "interest_payments.json", "label": "Federal Government Current Expenditures - Interest Payments" },
-        { "name": "totalassets.json", "label": "Fed Balance Sheet - Total Assets" },
-        { "name": "fedfunds.json", "label": "Fed Funds Rate" },
-        { "name": "cpi_yoy.json", "label": "Consumer Price Index YoY" },
-        { "name": "treasury.json", "label": "Treasury Securities 1-Year" },
-        { "name": "bonds10y.json", "label": "Bonds 10 Years" },
-        { "name": "unemployment.json", "label": "Unemployment Rate" },
-        { "name": "unfilled_vacancies.json", "label": "Unfilled Vacancies" },
-        { "name": "housing.json", "label": "Housing Starts" },
-        { "name": "eu.json", "label": "Euro" },
-        { "name": "oil.json", "label": "Oil" },
-        { "name": "bitcoin.json", "label": "BTC" },
-        { "name": "ethereum.json", "label": "ETH" }
+        { "name": "m1.json", "label": "Money Supply - M1", "startDate": "2018-01-01" },
+        { "name": "m2.json", "label": "Money Supply - M2", "startDate": "2018-01-01" },
+        { "name": "sahm.json", "label": "Sahm Rule Recession Indicator", "startDate": "2018-01-01" },
+        { "name": "debt.json", "label": "Debt GDP Ratio", "startDate": "2018-01-01" },
+        { "name": "interest_payments.json", "label": "Federal Government Current Expenditures - Interest Payments", "startDate": "2018-01-01" },
+        { "name": "totalassets.json", "label": "Fed Balance Sheet - Total Assets", "startDate": "2018-01-01" },
+        { "name": "fedfunds.json", "label": "Fed Funds Rate", "startDate": "2018-01-01" },
+        { "name": "cpi_yoy.json", "label": "Consumer Price Index YoY", "startDate": "2018-01-01" },
+        { "name": "treasury.json", "label": "Treasury Securities 1-Year", "startDate": "2018-01-01" },
+        { "name": "bonds10y.json", "label": "Bonds 10 Years", "startDate": "2018-01-01" },
+        { "name": "unemployment.json", "label": "Unemployment Rate", "startDate": "2018-01-01" },
+        { "name": "unfilled_vacancies.json", "label": "Unfilled Vacancies", "startDate": "2018-01-01" },
+        { "name": "housing.json", "label": "Housing Starts", "startDate": "2018-01-01" },
+        { "name": "eu.json", "label": "Euro", "startDate": "2018-01-01" },
+        { "name": "oil.json", "label": "Oil", "startDate": "2018-01-01" },
+        { "name": "bitcoin.json", "label": "BTC", "startDate": "2018-01-01" },
+        { "name": "ethereum.json", "label": "ETH", "startDate": "2018-01-01" }
     ]
 }
