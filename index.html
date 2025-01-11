@@ -157,7 +157,7 @@
                 ctx.font = `${fontSize}px ${fontStyle}`;
                 ctx.fillStyle = fontColor;
                 ctx.textAlign = 'right';
-                ctx.fillText(label, chart.width - 10, 15);
+                ctx.fillText(label, chart.width - 10, 10); 
                 ctx.restore();
             }
         };
@@ -297,6 +297,7 @@
                         },
                         y: {
                             beginAtZero: true,
+                            min: 0, // Ensure y-axis starts at 0
                             ticks: {
                                 color: isDark ? '#ffffff' : '#333333'
                             },
@@ -315,7 +316,12 @@
                             callbacks: {
                                 title: function(context) {
                                     const date = context[0].label;
-                                    return luxon.DateTime.fromISO(date).toFormat('dd MMM yyyy');
+                                    const dt = luxon.DateTime.fromISO(date);
+                                    if (dt.isValid) {
+                                        return dt.toFormat('dd MMM yyyy');
+                                    } else {
+                                        return date; // Fallback to original label if invalid
+                                    }
                                 }
                             }
                         },
