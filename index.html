@@ -169,6 +169,20 @@
             padding: 20px; /* Increased padding if necessary */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
+        @media (max-width: 600px) {
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-container h1 {
+                font-size: 20px;
+            }
+
+            .toggle-switch {
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
 <body>
