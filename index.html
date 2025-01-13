@@ -23,6 +23,7 @@
             background-color: #ffffff; /* Light mode preferred */
             color: #333333;
             transition: background-color 0.3s ease, color 0.3s ease;
+            padding-top: 60px; /* Adjust based on the header height */
         }
         h1 {
             margin-top: 0;
@@ -31,6 +32,19 @@
         .header-container {
             text-align: center;
             margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background-color: inherit; /* Ensures it adapts to light/dark mode */
+            z-index: 1000; /* Keeps the header above other elements */
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-container h1 {
+            margin: 0;
+            font-size: 24px;
         }
         .chart-grid {
             display: flex;
@@ -160,12 +174,12 @@
 <body>
     <div class="header-container">
         <h1>Fed Data Collection</h1>
-    </div>
-
-    <!-- Toggle Switch -->
-    <div class="toggle-switch">
-        <input type="checkbox" id="darkToggle" aria-label="Toggle Dark Mode" />
-        <label for="darkToggle"></label>
+        
+        <!-- Toggle Switch -->
+        <div class="toggle-switch">
+            <input type="checkbox" id="darkToggle" aria-label="Toggle Dark Mode" />
+            <label for="darkToggle"></label>
+        </div>
     </div>
 
     <!-- Charts Grid -->
@@ -174,7 +188,7 @@
     </div>
 
     <!-- Tooltip Div -->
-    <div id="tooltip"></div>
+    <div id="tooltip" role="tooltip"></div>
 
     <script>
         // Store chart instances
