@@ -149,6 +149,12 @@
             opacity: 1;
             transform: translateY(0);
         }
+        .chart-container.large-chart {
+            width: 90%; /* Increase width for the selected chart */
+            height: 500px; /* Optional: Increase height for better visibility */
+            padding: 20px; /* Increased padding if necessary */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -462,12 +468,22 @@
                 files.forEach(file => {
                     let chartDiv = document.createElement('div');
                     chartDiv.className = 'chart-container';
+                    
+                    // Add 'large-chart' class to the specific chart you want to enlarge
+                    if (file.name === 'specificChart.json') { // Replace 'specificChart.json' with your chart's filename
+                        chartDiv.classList.add('large-chart');
+                    }
+
                     chartDiv.setAttribute('data-file', file.name);
                     chartDiv.setAttribute('data-label', file.label);
                     chartDiv.setAttribute('data-description', file.description);
                     chartDiv.setAttribute('data-start-date', file.startDate); // Only startDate is set
                     chartDiv.innerHTML = `<canvas id="${file.name.replace('.json', 'Chart')}"></canvas>`;
                     document.getElementById('charts').appendChild(chartDiv);
+
+                    chartDiv.addEventListener('click', () => {
+                        chartDiv.classList.toggle('large-chart');
+                    });
                 });
 
                 // IntersectionObserver callback
